@@ -98,6 +98,13 @@
   }
   @keyframes blinkRed{ 0%, 49%{ opacity:1; } 50%, 100%{ opacity:0.4; } }
 
+  /* Linha do cronograma vigente hoje - destacada automaticamente via JS */
+  #cronoBody tr.vigor-atual td{
+    background:#fdecea !important; color:#922b21; font-weight:700;
+    border-top:2px solid var(--alert); border-bottom:2px solid var(--alert);
+  }
+  #cronoBody tr.vigor-atual td:first-child::before{ content:"🔴 "; }
+
   h2{
     font-family:'Playfair Display', serif; font-weight:700; font-size:21px; color:var(--navy-deep);
     margin:40px 0 6px; display:flex; align-items:center; gap:8px;
@@ -188,26 +195,27 @@
     <table>
       <caption>Fonte: Anexo I — Cronograma Previsto, Edital 001/2026</caption>
       <thead><tr><th>Etapa</th><th>Data</th></tr></thead>
-      <tbody>
-        <tr><td>Publicação do Edital</td><td>29/07/2026</td></tr>
-        <tr><td><strong class="hl">Período de Inscrições</strong> (só online)</td><td><strong class="hl">10/08 a 10/09/2026</strong></td></tr>
-        <tr><td>Requerimento de Isenção de Taxa</td><td>10 a 14/08/2026</td></tr>
-        <tr><td>Prazo final de pagamento da inscrição</td><td>11/09/2026 (até 21h)</td></tr>
-        <tr><td>Publicação dos locais de prova</td><td>06/10/2026</td></tr>
-        <tr><td>Prova — Dia 01 (Fundamental + Médio)</td><td>18/10/2026</td></tr>
-        <tr><td><strong class="hl">Prova — Dia 02 (Pedagogo + Professor + Superior)</strong></td><td><strong class="hl">01/11/2026</strong></td></tr>
-        <tr><td>Gabarito Preliminar — Dia 02</td><td>02/11/2026</td></tr>
-        <tr><td>Recurso contra Gabarito — Dia 02</td><td>03 a 05/11/2026</td></tr>
-        <tr><td>Gabarito Definitivo (pós-recursos)</td><td>19/11/2026</td></tr>
-        <tr><td>Resultado Preliminar da Prova Objetiva</td><td>27/11/2026</td></tr>
-        <tr><td>Recurso contra Resultado</td><td>01 a 03/12/2026</td></tr>
-        <tr><td>Resultado Pós-Recursos</td><td>11/12/2026</td></tr>
-        <tr><td>Convocação Teste de Aptidão Física / Títulos</td><td>14/12/2026</td></tr>
-        <tr><td>Aplicação do Teste de Aptidão Física</td><td>10/01/2027</td></tr>
-        <tr><td><strong class="hl">Resultado Final (Definitivo)</strong></td><td><strong class="hl">04/02/2027</strong></td></tr>
+      <tbody id="cronoBody">
+        <tr data-start="2026-07-29" data-end="2026-07-29"><td>Publicação do Edital</td><td>29/07/2026</td></tr>
+        <tr data-start="2026-08-10" data-end="2026-09-10"><td><strong class="hl">Período de Inscrições</strong> (só online)</td><td><strong class="hl">10/08 a 10/09/2026</strong></td></tr>
+        <tr data-start="2026-08-10" data-end="2026-08-14"><td>Requerimento de Isenção de Taxa</td><td>10 a 14/08/2026</td></tr>
+        <tr data-start="2026-09-11" data-end="2026-09-11"><td>Prazo final de pagamento da inscrição</td><td>11/09/2026 (até 21h)</td></tr>
+        <tr data-start="2026-10-06" data-end="2026-10-06"><td>Publicação dos locais de prova</td><td>06/10/2026</td></tr>
+        <tr data-start="2026-10-18" data-end="2026-10-18"><td>Prova — Dia 01 (Fundamental + Médio)</td><td>18/10/2026</td></tr>
+        <tr data-start="2026-11-01" data-end="2026-11-01"><td><strong class="hl">Prova — Dia 02 (Pedagogo + Professor + Superior)</strong></td><td><strong class="hl">01/11/2026</strong></td></tr>
+        <tr data-start="2026-11-02" data-end="2026-11-02"><td>Gabarito Preliminar — Dia 02</td><td>02/11/2026</td></tr>
+        <tr data-start="2026-11-03" data-end="2026-11-05"><td>Recurso contra Gabarito — Dia 02</td><td>03 a 05/11/2026</td></tr>
+        <tr data-start="2026-11-19" data-end="2026-11-19"><td>Gabarito Definitivo (pós-recursos)</td><td>19/11/2026</td></tr>
+        <tr data-start="2026-11-27" data-end="2026-11-27"><td>Resultado Preliminar da Prova Objetiva</td><td>27/11/2026</td></tr>
+        <tr data-start="2026-12-01" data-end="2026-12-03"><td>Recurso contra Resultado</td><td>01 a 03/12/2026</td></tr>
+        <tr data-start="2026-12-11" data-end="2026-12-11"><td>Resultado Pós-Recursos</td><td>11/12/2026</td></tr>
+        <tr data-start="2026-12-14" data-end="2026-12-14"><td>Convocação Teste de Aptidão Física / Títulos</td><td>14/12/2026</td></tr>
+        <tr data-start="2027-01-10" data-end="2027-01-10"><td>Aplicação do Teste de Aptidão Física</td><td>10/01/2027</td></tr>
+        <tr data-start="2027-02-04" data-end="2027-02-04"><td><strong class="hl">Resultado Final (Definitivo)</strong></td><td><strong class="hl">04/02/2027</strong></td></tr>
       </tbody>
     </table>
   </div>
+  <p class="clique-dica" id="cronoStatusMsg" style="display:none;"></p>
 
   <h2>💰 Salário e Carga Horária</h2>
   <p class="section-sub">Vencimento base informado no Capítulo II do edital (cargos de Pedagogo/Professor).</p>
@@ -326,5 +334,28 @@
   </footer>
 
 </div>
+<script>
+  // Destaca automaticamente, em vermelho, a linha do cronograma que esta
+  // vigente HOJE (comparando com a data/hora real do visitante) - assim a
+  // pagina nunca fica desatualizada sem precisar editar manualmente.
+  (function() {
+    const hoje = new Date();
+    const hojeYMD = hoje.getFullYear() + '-' + String(hoje.getMonth()+1).padStart(2,'0') + '-' + String(hoje.getDate()).padStart(2,'0');
+    const linhas = document.querySelectorAll('#cronoBody tr[data-start]');
+    let atual = null;
+    linhas.forEach(tr => {
+      const ini = tr.dataset.start, fim = tr.dataset.end;
+      if (hojeYMD >= ini && hojeYMD <= fim) {
+        tr.classList.add('vigor-atual');
+        atual = tr;
+      }
+    });
+    const msg = document.getElementById('cronoStatusMsg');
+    if (atual) {
+      msg.style.display = 'block';
+      msg.textContent = '🔴 Etapa vigente hoje: ' + atual.children[0].textContent.trim() + ' (' + atual.children[1].textContent.trim() + ')';
+    }
+  })();
+</script>
 </body>
 </html>
