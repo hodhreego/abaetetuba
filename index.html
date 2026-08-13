@@ -84,6 +84,20 @@
   .whats-btn:hover{ transform:translateY(-1px); box-shadow:0 5px 14px rgba(0,0,0,.22); }
   .whats-btn .whats-ico{ font-size:18px; }
 
+  .edital-link-wrap{ display:flex; flex-direction:column; align-items:center; gap:2px; margin:36px 0 8px; }
+  .edital-hand{ font-size:17px; animation:handDown 1.3s ease-in-out infinite; }
+  @keyframes handDown{ 0%,100%{ transform:translateY(0); } 50%{ transform:translateY(4px); } }
+  .edital-link{
+    display:block; text-align:center; font-size:17px; font-weight:700; color:var(--navy);
+    background:var(--bg); border:2.3px solid var(--navy); border-radius:15px;
+    padding:13.5px 21px; text-decoration:none;
+  }
+  .edital-link-blink{
+    color:#fff !important; background:#dc2626 !important; border-color:#dc2626 !important;
+    animation:blinkRed 0.8s infinite;
+  }
+  @keyframes blinkRed{ 0%, 49%{ opacity:1; } 50%, 100%{ opacity:0.4; } }
+
   h2{
     font-family:'Playfair Display', serif; font-weight:700; font-size:21px; color:var(--navy-deep);
     margin:40px 0 6px; display:flex; align-items:center; gap:8px;
@@ -298,6 +312,11 @@
       <div class="cargo-corpo">Teorias da aprendizagem (Piaget, Vygotsky, Ausubel, Bruner). Processos cognitivos: atenção, memória, percepção e raciocínio. Desenvolvimento socioemocional e afetivo na aprendizagem. Dificuldades de aprendizagem: identificação e caracterização. Transtornos de aprendizagem: dislexia, disgrafia, discalculia. Avaliação psicopedagógica: objetivos, instrumentos e procedimentos. Testes e escalas de avaliação do desenvolvimento cognitivo e emocional. Observação e registro do comportamento escolar. Diagnóstico psicopedagógico. Intervenção psicopedagógica individual e em grupo. Planejamento de estratégias de ensino adaptadas. Metodologias de ensino para crianças com dificuldades de aprendizagem. Adaptação de conteúdos e materiais didáticos. Mediação de conflitos e desenvolvimento de habilidades socioemocionais. Orientação e acompanhamento de estudantes em situação de risco escolar. Estimulação da leitura e escrita. Estímulo ao raciocínio lógico e matemático. Motivação e engajamento na aprendizagem. Inclusão escolar e educação inclusiva. Trabalho colaborativo com professores e equipe pedagógica. Estratégias de ensino diferenciadas para alunos com altas habilidades. Intervenção em dificuldades de atenção e hiperatividade. Uso de tecnologias e recursos digitais para apoio à aprendizagem. Avaliação contínua do progresso do aluno. Planejamento de projetos psicopedagógicos escolares. Interpretação e análise de resultados de avaliações. Atendimento a famílias e orientação parental sobre aprendizagem. Promoção de habilidades de estudo e organização. Psicopedagogia clínica e institucional: distinções e práticas. Integração de estratégias psicopedagógicas com currículo escolar.</div>
     </details>
 
+  </div>
+
+  <div class="edital-link-wrap">
+    <span class="edital-hand">👇</span>
+    <a href="https://institutovicentenelson.selecao.net.br/informacoes/102/" target="_blank" rel="noopener" class="edital-link edital-link-blink">Clique aqui para se inscrever no site oficial da banca (IVIN)</a>
   </div>
 
   <footer>
