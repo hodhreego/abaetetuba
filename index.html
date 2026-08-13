@@ -43,6 +43,22 @@
     border-radius:50%; background:radial-gradient(circle, rgba(201,162,39,.28) 0%, rgba(201,162,39,0) 70%);
   }
   .hero-inner{ max-width:760px; margin:0 auto; position:relative; z-index:1; }
+  .store-badge{
+    position:absolute; top:14px; right:14px; z-index:3;
+    display:flex; flex-direction:column; align-items:center; gap:3px;
+    background:rgba(255,255,255,.08); border:1px solid rgba(233,212,142,.4);
+    border-radius:13px; padding:10px 15px;
+    text-decoration:none; cursor:pointer;
+  }
+  .store-badge .temple{
+    font-size:45px; line-height:1; display:inline-block;
+    animation:templeWobble 2.4s ease-in-out infinite;
+  }
+  @keyframes templeWobble{0%,100%{transform:rotate(-45deg);} 50%{transform:rotate(45deg);}}
+  .store-badge .store-text{
+    font-size:11.9px; font-weight:800; color:var(--gold-light); text-align:center;
+    line-height:1.2; text-transform:uppercase; letter-spacing:.03em; white-space:nowrap;
+  }
   .eyebrow{
     display:inline-flex; align-items:center; gap:6px; font-size:11.5px; letter-spacing:.14em;
     text-transform:uppercase; font-weight:700; color:var(--gold-light);
@@ -127,6 +143,10 @@
 
 <div class="hero">
   <div class="hero-inner">
+    <a href="https://wa.me/c/554599699444" target="_blank" rel="noopener" class="store-badge">
+      <span class="temple">🏛️</span>
+      <span class="store-text">Loja de<br>Matemática</span>
+    </a>
     <span class="eyebrow">Concurso Público Nº 001/2026</span>
     <h1>Prefeitura de Abaetetuba-PA — resumo oficial do edital</h1>
     <p class="lede">Cronograma, salários e conteúdo programático, extraídos diretamente do edital publicado pelo Instituto Vicente Nelson (IVIN). Página informativa — não é material de venda.</p>
