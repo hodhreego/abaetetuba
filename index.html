@@ -245,6 +245,17 @@
   @media (prefers-reduced-motion:reduce){
     .thumb-frame, .thumb-frame::after{ animation:none; }
   }
+  /* Miniaturas crescem conforme a largura disponível (o iframe é escalado
+     junto, senão a página dentro dele apareceria cortada). */
+  @media (min-width:400px){
+    .thumb-frame{ width:160px; height:226px; }
+    .thumb-frame iframe{ transform:scale(0.2015); }
+  }
+  @media (min-width:720px){
+    .preview-row{ gap:16px; }
+    .thumb-frame{ width:200px; height:283px; }
+    .thumb-frame iframe{ transform:scale(0.2519); }
+  }
   .thumb-frame-label{ font-size:10.5px; color:var(--ink-soft); text-align:center; margin-top:5px; text-transform:uppercase; letter-spacing:.04em; font-weight:600; }
 
   /* Lista suspensa dourada "APOSTILA em PDF" — mesmo padrão do PSS SEED-PR */
