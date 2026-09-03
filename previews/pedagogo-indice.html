@@ -1,0 +1,973 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>preview</title>
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<style>
+
+:root {
+  --font-family: Arial, sans-serif;
+  --font-size-base: 14pt;
+  --font-size-caixas: 13pt;
+  --font-size-h1: 24pt;
+  --font-size-h2: 16pt;
+  --font-size-h3: 18pt;
+  --font-size-h4: 15pt;
+  --font-size-h5: 14pt;
+  --line-height: 1.5;
+  --page-padding: 20mm;
+  --border-width: 2px;
+  --color-text: #222222;
+  --color-bg: #ffffff;
+  --color-heading-border: #0066cc;
+}
+* { box-sizing: border-box; }
+html, body {
+  margin: 0;
+  height: 100%;
+  font-family: var(--font-family);
+  background: #ffffff;
+  color: var(--color-text);
+}
+.layout { display: flex; height: 100%; }
+
+/* Painel — mesmo visual/comportamento do editor.html */
+.panel {
+  width: 320px;
+  flex-shrink: 0;
+  background: #1f2228;
+  color: #eee;
+  padding: 16px;
+  overflow-y: auto;
+}
+.panel.oculto { display: none; }
+.btn-toggle-panel {
+  position: fixed;
+  top: 16px;
+  left: 16px;
+  z-index: 999;
+  width: auto;
+  padding: 8px 14px;
+  margin: 0;
+  border: none;
+  border-radius: 6px;
+  background: #1f2228;
+  color: #eee;
+  font-size: 13px;
+  cursor: pointer;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.4);
+}
+.btn-toggle-panel:hover { background: #2b2f36; }
+.panel h1 { font-size: 16px; margin: 0 0 16px; }
+.panel h2 {
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: #9aa0a8;
+  margin: 20px 0 8px;
+  border-top: 1px solid #3a3f47;
+  padding-top: 12px;
+}
+.panel h2:first-of-type { border-top: none; padding-top: 0; }
+.field { margin-bottom: 12px; }
+.field label {
+  display: flex;
+  justify-content: space-between;
+  font-size: 12px;
+  margin-bottom: 4px;
+  color: #ccc;
+}
+.field output { color: #7fc4ff; font-variant-numeric: tabular-nums; }
+.field input[type="range"] { width: 100%; }
+.field select, .field input[type="color"] {
+  width: 100%;
+  padding: 4px;
+  background: #2b2f36;
+  color: #eee;
+  border: 1px solid #3a3f47;
+  border-radius: 4px;
+}
+.field.row { display: flex; gap: 8px; align-items: center; }
+.field.row label { flex: 1; margin: 0; }
+button {
+  width: 100%;
+  padding: 10px;
+  margin-top: 8px;
+  border: none;
+  border-radius: 6px;
+  font-size: 13px;
+  cursor: pointer;
+}
+#btn-pdf { background: linear-gradient(135deg, #e74c3c, #c0392b); color: #fff; }
+#btn-imprimir { background: linear-gradient(135deg, #3498db, #2980b9); color: #fff; }
+#btn-resetar { background: #3a3f47; color: #eee; }
+.status { font-size: 11px; color: #7fdb9a; margin-top: 8px; min-height: 14px; }
+
+.preview-wrap {
+  flex: 1;
+  overflow: auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 24px;
+}
+.page {
+  width: 210mm;
+  max-width: 100%;
+  min-height: 297mm;
+  background: var(--color-bg);
+  box-shadow: 0 0 20px rgba(0,0,0,0.4);
+  padding: var(--page-padding);
+  font-size: var(--font-size-base);
+  line-height: var(--line-height);
+  color: var(--color-text);
+}
+
+/* Capa (mesmo layout do padrao "PSS SEED-PR - LOJA DE MATEMATICA") */
+.capa {
+  position: relative;
+  width: 210mm;
+  max-width: 100%;
+  min-height: 297mm;
+  margin: 0 0 24px 0;
+  background: linear-gradient(160deg, #2a5aa0 0%, #16305e 55%, #0b1c3a 100%);
+  color: #fff;
+  overflow: hidden;
+  box-sizing: border-box;
+  box-shadow: 0 0 20px rgba(0,0,0,0.4);
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  padding: 30mm 18mm;
+  text-align: center;
+  page-break-after: always;
+  -webkit-print-color-adjust: exact;
+  print-color-adjust: exact;
+}
+.capa::before {
+  content: "";
+  position: absolute;
+  top: 8%;
+  left: 50%;
+  width: 88%;
+  padding-bottom: 88%;
+  transform: translateX(-50%);
+  border-radius: 50%;
+  background: rgba(255,255,255,0.08);
+}
+.capa-topo, .capa-titulo, .capa-rodape {
+  position: relative;
+  z-index: 1;
+}
+.capa-titulo {
+  margin-top: -18mm;
+}
+.capa-topo .programa {
+  font-family: Georgia, 'Times New Roman', serif;
+  font-size: 13pt;
+  letter-spacing: 0.35em;
+  color: #e8b84b;
+  margin: 0 0 6px 0;
+}
+.capa-topo .instituicao {
+  font-family: Georgia, 'Times New Roman', serif;
+  font-weight: bold;
+  font-size: 17pt;
+  letter-spacing: 0.03em;
+  color: #fff;
+  margin: 0;
+}
+.capa-topo .ano {
+  font-family: Georgia, 'Times New Roman', serif;
+  font-size: 15pt;
+  letter-spacing: 0.3em;
+  color: #e8b84b;
+  margin: 6px 0 14px 0;
+}
+.capa-topo .capa-linha {
+  width: 220px;
+  height: 2px;
+  background: #e8794a;
+  margin: 0 auto;
+  position: relative;
+}
+.capa-topo .capa-linha::after {
+  content: "";
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  background: #e8b84b;
+  transform: translate(-50%, -50%);
+}
+.capa-titulo .capa-titulo-1 {
+  font-family: Georgia, 'Times New Roman', serif;
+  font-weight: bold;
+  font-size: 45pt;
+  color: #fff;
+  margin: 0;
+  line-height: 1.1;
+}
+.capa-titulo .capa-titulo-2 {
+  font-family: Georgia, 'Times New Roman', serif;
+  font-weight: bold;
+  font-size: 51pt;
+  color: #e8794a;
+  margin: 6px 0 0 0;
+  line-height: 1.1;
+}
+.capa-titulo .capa-destaque-amarelo {
+  color: #f7d774;
+}
+.capa-titulo .capa-subtitulo {
+  font-family: Georgia, 'Times New Roman', serif;
+  font-size: 12pt;
+  letter-spacing: 0.12em;
+  color: #e8b84b;
+  margin: 14px auto 0 auto;
+  max-width: 75%;
+  text-transform: uppercase;
+}
+.capa-rodape .capa-linha-fina {
+  width: 60%;
+  height: 1px;
+  background: rgba(255,255,255,0.4);
+  margin: 0 auto 12px auto;
+}
+.capa-rodape .capa-copyright {
+  font-size: 13pt;
+  font-weight: bold;
+  letter-spacing: 0.03em;
+  color: #fff;
+  margin: 0 0 6px 0;
+}
+.capa-rodape .capa-aviso {
+  display: inline-block;
+  font-size: 11pt;
+  font-weight: bold;
+  letter-spacing: 0.02em;
+  color: #fff;
+  background: rgba(200, 60, 50, 0.85);
+  border: 1px solid rgba(255,255,255,0.5);
+  border-radius: 0;
+  padding: 6px 14px;
+  margin: 4px 0 0 0;
+}
+@media print {
+  .capa { page-break-after: always; break-after: page; }
+}
+
+.apostila-titulo {
+  text-align: center;
+  margin-bottom: 30px;
+  padding-bottom: 20px;
+  border-bottom: var(--border-width) solid var(--color-heading-border);
+}
+.apostila-titulo h1 { font-size: var(--font-size-h1); margin: 10px 0; color: var(--color-heading-border); }
+.apostila-titulo p { font-size: var(--font-size-h2); margin: 10px 0; color: #666; }
+.diferenciais {
+  margin: 0 0 30px 0;
+  padding: 20px 24px;
+  background: #f8f9fb;
+  border: 1px solid #dde3ea;
+  border-radius: 8px;
+  page-break-after: always;
+}
+.diferenciais h2 {
+  text-align: center;
+  font-size: var(--font-size-h2);
+  color: var(--color-heading-border);
+  margin: 0 0 16px 0;
+}
+.dif-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+.dif-item { display: flex; align-items: flex-start; gap: 10px; }
+.dif-num {
+  flex: 0 0 auto;
+  min-width: 34px;
+  height: 34px;
+  display: flex; align-items: center; justify-content: center;
+  background: var(--color-heading-border);
+  color: #fff;
+  font-weight: bold;
+  border-radius: 6px;
+  font-size: calc(var(--font-size-base) + 1pt);
+}
+.dif-label { font-size: calc(var(--font-size-base) - 1pt); color: #333; }
+@media print { .dif-grid { grid-template-columns: 1fr 1fr; } }
+
+/* Indice clicavel */
+.indice {
+  background: #f7f9fc;
+  border: 1px solid #dde3ec;
+  border-radius: 8px;
+  padding: 20px 24px;
+  margin-bottom: 40px;
+  page-break-after: always;
+}
+.indice h2 {
+  font-size: var(--font-size-h2);
+  color: var(--color-heading-border);
+  margin: 0 0 14px 0;
+  text-align: center;
+}
+.parte-divisor {
+  page-break-before: always;
+  margin: 0 0 24px 0;
+  padding: 30px 20px;
+  text-align: center;
+  background: linear-gradient(120deg, var(--color-heading-border), #1c4c82);
+  border-radius: 6px;
+}
+.parte-divisor span {
+  color: #fff;
+  font-size: calc(var(--font-size-h1) * 0.85);
+  font-weight: bold;
+  letter-spacing: 0.06em;
+}
+.indice-parte {
+  margin: 22px 0 10px 0;
+  padding: 8px 12px;
+  background: var(--color-heading-border);
+  color: #fff;
+  font-weight: bold;
+  font-size: calc(var(--font-size-base) - 1pt);
+  letter-spacing: 0.04em;
+  border-radius: 4px;
+}
+.indice-parte:first-child { margin-top: 0; }
+.indice-cap { margin-bottom: 4px; }
+.indice-cap > a {
+  display: block;
+  font-weight: bold;
+  color: var(--color-heading-border);
+  text-decoration: none;
+  padding: 6px 4px;
+  border-bottom: 1px dotted #ccc;
+  font-size: calc(var(--font-size-base) - 1pt);
+}
+.indice-cap > a:hover { text-decoration: underline; }
+.indice-subs { list-style: none; margin: 0 0 8px 0; padding: 0 0 0 22px; }
+.indice-subs li a {
+  display: block;
+  color: #444;
+  text-decoration: none;
+  padding: 3px 4px;
+  font-size: calc(var(--font-size-caixas) - 1pt);
+}
+.indice-subs li a:hover { text-decoration: underline; color: var(--color-heading-border); }
+
+/* Gabarito */
+.gabarito-final {
+  margin-top: 50px;
+  padding-top: 20px;
+  border-top: 3px double var(--color-heading-border);
+  page-break-before: always;
+}
+.gabarito-final h2 {
+  font-size: var(--font-size-h2);
+  color: var(--color-heading-border);
+  text-align: center;
+  margin-bottom: 18px;
+}
+.gabarito-cap-titulo {
+  font-size: var(--font-size-h4);
+  color: var(--color-heading-border);
+  margin: 18px 0 8px 0;
+  border-bottom: 1px solid #ccc;
+  padding-bottom: 4px;
+}
+.gabarito-tabela {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 10px;
+}
+.gabarito-item {
+  background: #eef7ff;
+  border: 1px solid #b8d8f5;
+  border-radius: 6px;
+  padding: 6px 12px;
+  font-size: calc(var(--font-size-caixas) - 1pt);
+}
+.gabarito-item .resp {
+  font-weight: bold;
+  color: #1565c0;
+}
+.gabarito-item .indisponivel {
+  font-style: italic;
+  color: #999;
+}
+
+/* Aviso legal */
+.aviso-legal-final {
+  page-break-before: always;
+  padding: 30px 10px;
+}
+.aviso-legal-final h1 {
+  font-size: 18pt;
+  color: #c0392b;
+  text-align: center;
+  margin-bottom: 5px;
+}
+.aviso-linha { height: 3px; background: #2196f3; margin: 15px 0; }
+.aviso-box {
+  background: #ffebee;
+  border: 2px solid #c0392b;
+  border-radius: 12px;
+  padding: 20px;
+  margin-bottom: 20px;
+  text-align: justify;
+  font-size: 12pt;
+  line-height: 1.7;
+  color: #c0392b;
+}
+.aviso-legal-final .autor {
+  text-align: center;
+  font-size: 14pt;
+  margin: 20px 0;
+}
+.aviso-legal-final .email { text-align: center; font-size: 12pt; margin: 15px 0; }
+.aviso-legal-final .contatos {
+  display: flex;
+  justify-content: center;
+  gap: 40px;
+  margin: 30px 0;
+  flex-wrap: wrap;
+}
+.aviso-legal-final .qrcode-item { text-align: center; }
+.aviso-legal-final .rotulo { font-size: 11pt; font-weight: bold; color: #2196f3; margin: 8px 0 4px 0; }
+.aviso-legal-final .valor { font-size: 12pt; margin: 0; }
+.aviso-legal-final .valor a { color: #2196f3; text-decoration: none; font-weight: bold; }
+.aviso-legal-final .copyright {
+  text-align: center;
+  font-size: 10pt;
+  color: #999;
+  margin-top: 20px;
+  padding-top: 15px;
+  border-top: 1px solid #ddd;
+}
+
+.capitulo { margin-bottom: 44px; }
+.capitulo > h2 {
+  font-size: var(--font-size-h2);
+  color: var(--accent-text, #fff);
+  background: var(--accent, var(--color-heading-border));
+  margin: 0 0 18px 0;
+  padding: 10px 16px;
+  border-radius: 4px;
+  page-break-after: avoid;
+  break-after: avoid;
+  page-break-inside: avoid;
+  break-inside: avoid;
+}
+.subsecao { margin-bottom: 26px; }
+.subsecao > h3 {
+  font-size: var(--font-size-h3);
+  color: var(--accent, var(--color-heading-border));
+  margin: 0 0 12px 0;
+  border-left: var(--border-width) solid var(--accent, var(--color-heading-border));
+  padding-left: 12px;
+  page-break-after: avoid;
+  break-after: avoid;
+  page-break-inside: avoid;
+  break-inside: avoid;
+}
+.subsecao h4 {
+  font-size: var(--font-size-h4);
+  page-break-after: avoid;
+  break-after: avoid;
+}
+
+.conceito {
+  background: #e8f4f8;
+  border-left: 4px solid #0088cc;
+  padding: 12px;
+  margin: 12px 0;
+  font-size: var(--font-size-caixas);
+}
+.conteudo p { margin: 0 0 12px 0; }
+.conteudo ul { margin: 0 0 12px 0; padding-left: 22px; }
+.conteudo li { margin-bottom: 6px; }
+
+/* Efeito caneta marca-texto - trechos com alta chance de cair na prova */
+mark.hl-amarelo, mark.hl-verde, mark.hl-rosa {
+  background: none;
+  background-image: linear-gradient(120deg, currentColor 0%, currentColor 100%);
+  background-repeat: no-repeat;
+  background-size: 100% 55%;
+  background-position: 0 78%;
+  color: inherit;
+  padding: 0.02em 0.15em;
+  border-radius: 2px;
+  box-decoration-break: clone;
+  -webkit-box-decoration-break: clone;
+}
+mark.hl-amarelo { background-image: linear-gradient(120deg, #fff59d 0%, #ffee58 100%); }
+mark.hl-verde { background-image: linear-gradient(120deg, #ccff90 0%, #b2ff59 100%); }
+mark.hl-rosa { background-image: linear-gradient(120deg, #f8bbd0 0%, #f48fb1 100%); }
+
+/* Sublinhado (via __texto__) para reforcar termos-chave */
+u { text-decoration: underline; text-decoration-color: var(--color-heading-border); text-decoration-thickness: 2px; text-underline-offset: 2px; }
+
+/* Imagem didatica - no maximo ~10% da largura/area da pagina */
+.imagem-didatica {
+  display: block;
+  clear: both;
+  width: 40%;
+  min-width: 200px;
+  margin: 12px auto 12px 0;
+  text-align: left;
+}
+.imagem-didatica img {
+  width: 100%;
+  height: auto;
+  display: block;
+  margin-right: auto;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.15);
+}
+.imagem-didatica figcaption {
+  font-size: calc(var(--font-size-caixas) - 5pt);
+  color: #666;
+  margin-top: 4px;
+  line-height: 1.3;
+  text-align: left;
+  white-space: normal;
+  word-break: normal;
+  overflow-wrap: normal;
+  hyphens: none;
+}
+
+/* Ilustracoes SVG nativas (sem imagens externas — leve, vetorial) */
+.ilustracao-svg {
+  display: block;
+  clear: both;
+  width: 55%;
+  max-width: 320px;
+  min-width: 220px;
+  margin: 16px auto;
+  text-align: center;
+}
+.ilustracao-svg svg {
+  width: 100%;
+  height: auto;
+  display: block;
+  margin: 0 auto;
+}
+.ilustracao-svg figcaption {
+  font-size: calc(var(--font-size-caixas) - 4pt);
+  color: #666;
+  margin-top: 6px;
+  line-height: 1.3;
+  text-align: center;
+}
+@media print {
+  .ilustracao-svg { page-break-inside: avoid; break-inside: avoid; }
+}
+@media print {
+  .imagem-didatica { page-break-inside: avoid; break-inside: avoid; }
+}
+
+/* Citacao */
+.citacao {
+  background: #fffbea;
+  border-left: 4px solid #f0ad4e;
+  padding: 16px 20px;
+  margin: 18px 0;
+  font-style: italic;
+  font-size: var(--font-size-caixas);
+}
+.citacao .aspas { font-size: 28pt; color: #f0ad4e; opacity: 0.5; line-height: 0; vertical-align: -8px; margin-right: 4px; font-style: normal; }
+.citacao .autor-citacao { display: block; margin-top: 8px; font-style: normal; font-weight: bold; color: #8a6d3b; text-align: right; }
+
+/* Linha do tempo */
+.timeline { margin: 18px 0; padding-left: 10px; border-left: 3px solid #2196f3; }
+.timeline-item { position: relative; padding: 8px 0 8px 20px; margin-bottom: 4px; }
+.timeline-item::before { content: ""; position: absolute; left: -19px; top: 14px; width: 12px; height: 12px; background: #2196f3; border-radius: 50%; border: 2px solid #fff; }
+.timeline-texto { font-size: var(--font-size-caixas); }
+
+/* Mapa mental */
+.mapa-mental { background: #f3e5f5; border: 2px dashed #9c27b0; border-radius: 8px; padding: 20px; margin: 18px 0; text-align: center; }
+.mapa-mental .no-central { display: inline-block; background: #9c27b0; color: #fff; font-weight: bold; padding: 10px 20px; border-radius: 20px; margin-bottom: 14px; font-size: var(--font-size-caixas); }
+.mapa-mental .ramos { display: flex; flex-wrap: wrap; gap: 10px; justify-content: center; }
+.mapa-mental .ramo { background: #fff; border: 1px solid #9c27b0; color: #6a1b7a; padding: 8px 14px; border-radius: 16px; font-size: calc(var(--font-size-caixas) - 1pt); }
+
+/* Tabela comparativa */
+.tabela-comparativa { margin: 18px 0; overflow-x: auto; }
+.tabela-comparativa table { width: 100%; border-collapse: collapse; font-size: calc(var(--font-size-caixas) - 1pt); }
+.tabela-comparativa caption { font-weight: bold; text-align: left; margin-bottom: 8px; color: #333; }
+.tabela-comparativa th { background: var(--color-heading-border); color: #fff; padding: 8px 12px; text-align: left; }
+.tabela-comparativa td { padding: 8px 12px; border-bottom: 1px solid #ddd; }
+.tabela-comparativa tr:nth-child(even) { background: #f5f8fc; }
+
+/* Atencao */
+.atencao { background: #fdecea; border-left: 4px solid #e74c3c; padding: 14px 18px; margin: 18px 0; font-size: var(--font-size-caixas); }
+.atencao h5 { margin: 0 0 6px 0; color: #c0392b; }
+.atencao p { margin: 0; }
+
+/* Cai na prova */
+.cai-na-prova { background: #e8f5e9; border-left: 4px solid #43a047; padding: 14px 18px; margin: 18px 0; font-size: var(--font-size-caixas); }
+.cai-na-prova h5 { margin: 0 0 6px 0; color: #2e7d32; }
+.cai-na-prova p { margin: 0 0 6px 0; }
+.cai-na-prova .fonte { font-size: calc(var(--font-size-caixas) - 2pt); color: #666; font-style: italic; }
+
+/* Exercicio resolvido */
+.resolvido { background: #fff8e1; border: 1px solid #ffca28; border-radius: 6px; padding: 14px 18px; margin: 18px 0; font-size: var(--font-size-caixas); }
+.resolvido h5 { margin: 0 0 8px 0; color: #f57f17; }
+.resolvido .pergunta { margin: 0 0 8px 0; }
+.resolvido .resposta { margin: 0; background: #fff; padding: 10px; border-radius: 4px; }
+.resolvido .passos-titulo { margin: 10px 0 4px 0; }
+.resolvido .passos-resolucao { margin: 0 0 10px 0; padding-left: 22px; }
+.resolvido .passos-resolucao li { margin-bottom: 6px; }
+.ilustracao-svg-inline { width: 70%; max-width: 260px; margin: 10px auto; }
+.exercicios-simulado .questao-ufpr { page-break-inside: avoid; }
+
+/* Destaques */
+.destaques-secao { background: #eef7ff; border-left: 4px solid #1976d2; padding: 14px 18px; margin: 18px 0; }
+.destaques-secao h5 { margin: 0 0 10px 0; color: #1565c0; }
+.destaque { margin-bottom: 10px; font-size: var(--font-size-caixas); }
+.marcas { margin-left: 8px; }
+.marca { display: inline-block; background: #1976d2; color: #fff; font-size: calc(var(--font-size-caixas) - 3pt); padding: 2px 8px; border-radius: 10px; margin-right: 4px; }
+
+/* Brainstorm */
+.brainstorm-secao { background: #fff3e0; border-left: 4px solid #fb8c00; padding: 14px 18px; margin: 18px 0; }
+.brainstorm-secao h5 { margin: 0 0 10px 0; color: #e65100; }
+.brainstorm-item { margin-bottom: 10px; font-size: var(--font-size-caixas); }
+.reflexao { margin: 4px 0 0 0; color: #555; }
+
+/* Questoes UFPR */
+.exercicios-ufpr { background: #f8f8f8; padding: 15px; margin: 18px 0; border: 1px solid #ddd; border-radius: 4px; font-size: var(--font-size-caixas); }
+.exercicios-ufpr h5 { margin: 0 0 10px 0; }
+.questao-ufpr { margin-bottom: 20px; padding-bottom: 15px; border-bottom: 1px solid #eee; }
+.questao-ufpr:last-child { border-bottom: none; }
+.questao-numero { font-weight: bold; color: var(--color-heading-border); margin: 0 0 6px 0; }
+.questao-enunciado { margin: 0 0 8px 0; }
+.questao-opcoes { margin-left: 10px; }
+.opcao { margin: 6px 0; }
+
+/* Questoes de formatos variados (Simulado 4/5) */
+.tipo-questao { font-weight: normal; font-style: italic; color: #777; font-size: calc(var(--font-size-caixas) - 2pt); }
+.questao-ce .opcao { display: inline-block; margin-right: 24px; }
+.itens-somatoria { margin: 8px 0 8px 10px; list-style: none; padding-left: 0; }
+.itens-somatoria li { margin: 6px 0; }
+.instrucao-somatoria { color: #777; font-size: calc(var(--font-size-caixas) - 2pt); margin: 6px 0 0 0; }
+.colunas-associacao { display: flex; gap: 24px; margin: 10px 0; flex-wrap: wrap; }
+.coluna-a, .coluna-b { flex: 1; min-width: 180px; }
+.coluna-a ol, .coluna-b ol { margin: 6px 0 0 0; padding-left: 20px; }
+.texto-lacunas { line-height: 1.9; }
+.banco-palavras { background: #fff8e1; border-left: 3px solid #f9a825; padding: 8px 12px; margin: 8px 0 0 0; font-size: calc(var(--font-size-caixas) - 1pt); }
+.itens-ordenacao { margin: 8px 0 8px 10px; }
+.itens-ordenacao li { margin: 6px 0; padding: 4px 10px; background: #fff; border: 1px dashed #bbb; border-radius: 3px; list-style: none; }
+.linha-resposta { margin-top: 10px; color: #555; }
+.linhas-discursiva { margin-top: 10px; }
+.linha-pontilhada { border-bottom: 1px dotted #999; height: 24px; }
+.gabarito-tipo { font-weight: normal; font-style: italic; font-size: calc(var(--font-size-caixas) - 3pt); color: #888; }
+
+/* Glossario */
+.glossario { background: #f0f0f0; padding: 15px; margin: 18px 0; border-radius: 4px; font-size: var(--font-size-caixas); }
+.glossario h5 { margin: 0 0 10px 0; }
+.glossario dt { font-weight: bold; margin-top: 10px; }
+.glossario dd { margin-left: 20px; margin-bottom: 6px; }
+
+/* Impressao: some com o painel, remove sombras/margens externas */
+@media print {
+  html, body { height: auto; background: #fff; }
+  .panel { display: none !important; }
+  .layout { display: block; height: auto; }
+  .preview-wrap { padding: 0; overflow: visible; display: block; }
+  .page { width: 100%; min-height: 0; box-shadow: none; margin: 0; }
+  @page { margin: 0; size: A4; }
+  .capitulo:not(:first-of-type) {
+    page-break-before: always;
+    break-before: always;
+  }
+  .capitulo > h2, .subsecao > h3, .subsecao h4 {
+    page-break-after: avoid;
+    break-after: avoid;
+    page-break-inside: avoid;
+    break-inside: avoid;
+  }
+  .conceito, .citacao, .atencao, .cai-na-prova, .resolvido,
+  .destaques-secao, .brainstorm-secao, .mapa-mental, .questao-ufpr {
+    page-break-inside: avoid;
+    break-inside: avoid;
+  }
+}
+
+html,body{margin:0; padding:0; background:#fff;}
+</style>
+</head>
+<body>
+<div class="page"><div class="indice">
+<h2>&#128218; Índice</h2>
+<div class="indice-cap"><a href="#page-info-edital">📋 Tudo Sobre o Edital 001/2026 (cronograma, salário, o que cai na prova)</a></div>
+<div class="indice-parte">PARTE I — LÍNGUA PORTUGUESA</div>
+<div class="indice-cap"><a href="#cap-1-ortografia-e-emprego-de-letras">1. Ortografia e Emprego de Letras</a></div>
+<ul class="indice-subs">
+<li><a href="#sub-1-1-uso-de-s-z-x-ch-ss-c-e-digrafos">1.1 Uso de S, Z, X, CH, SS, Ç e Dígrafos</a></li>
+<li><a href="#sub-1-2-uso-de-por-que-porque-por-que-e-porque">1.2 Uso de POR QUE, PORQUE, POR QUÊ e PORQUÊ</a></li>
+</ul>
+<div class="indice-cap"><a href="#cap-2-acentuacao-grafica">2. Acentuação Gráfica</a></div>
+<ul class="indice-subs">
+<li><a href="#sub-2-1-regras-de-acentuacao-oxitonas-paroxitonas-proparoxitonas">2.1 Regras de Acentuação: Oxítonas, Paroxítonas, Proparoxítonas</a></li>
+</ul>
+<div class="indice-cap"><a href="#cap-3-classes-gramaticais-i-substantivo-adjetivo-artigo-numeral-pronome">3. Classes Gramaticais I — Substantivo, Adjetivo, Artigo, Numeral, Pronome</a></div>
+<ul class="indice-subs">
+<li><a href="#sub-3-1-substantivo-adjetivo-e-artigo">3.1 Substantivo, Adjetivo e Artigo</a></li>
+<li><a href="#sub-3-2-numeral-e-pronome">3.2 Numeral e Pronome</a></li>
+</ul>
+<div class="indice-cap"><a href="#cap-4-classes-gramaticais-ii-verbo-adverbio-preposicao-conjuncao">4. Classes Gramaticais II — Verbo, Advérbio, Preposição, Conjunção</a></div>
+<ul class="indice-subs">
+<li><a href="#sub-4-1-verbo-modos-tempos-e-vozes">4.1 Verbo: Modos, Tempos e Vozes</a></li>
+<li><a href="#sub-4-2-adverbio-preposicao-conjuncao-e-interjeicao">4.2 Advérbio, Preposição, Conjunção e Interjeição</a></li>
+</ul>
+<div class="indice-cap"><a href="#cap-5-sintaxe-termos-da-oracao">5. Sintaxe — Termos da Oração</a></div>
+<ul class="indice-subs">
+<li><a href="#sub-5-1-sujeito-e-predicado">5.1 Sujeito e Predicado</a></li>
+<li><a href="#sub-5-2-complementos-verbais-e-termos-acessorios">5.2 Complementos Verbais e Termos Acessórios</a></li>
+</ul>
+<div class="indice-cap"><a href="#cap-6-concordancia-verbal-e-nominal">6. Concordância Verbal e Nominal</a></div>
+<ul class="indice-subs">
+<li><a href="#sub-6-1-concordancia-verbal">6.1 Concordância Verbal</a></li>
+<li><a href="#sub-6-2-concordancia-nominal">6.2 Concordância Nominal</a></li>
+</ul>
+<div class="indice-cap"><a href="#cap-7-regencia-verbal-e-nominal-e-crase">7. Regência Verbal e Nominal, e Crase</a></div>
+<ul class="indice-subs">
+<li><a href="#sub-7-1-regencia-verbal-e-nominal">7.1 Regência Verbal e Nominal</a></li>
+<li><a href="#sub-7-2-crase">7.2 Crase</a></li>
+</ul>
+<div class="indice-cap"><a href="#cap-8-interpretacao-e-compreensao-de-texto">8. Interpretação e Compreensão de Texto</a></div>
+<ul class="indice-subs">
+<li><a href="#sub-8-1-estrategias-de-leitura-e-tipos-de-inferencia">8.1 Estratégias de Leitura e Tipos de Inferência</a></li>
+</ul>
+<div class="indice-cap"><a href="#cap-9-figuras-de-linguagem-coesao-e-coerencia-textual">9. Figuras de Linguagem, Coesão e Coerência Textual</a></div>
+<ul class="indice-subs">
+<li><a href="#sub-9-1-principais-figuras-de-linguagem">9.1 Principais Figuras de Linguagem</a></li>
+<li><a href="#sub-9-2-coesao-e-coerencia-textual">9.2 Coesão e Coerência Textual</a></li>
+</ul>
+<div class="indice-cap"><a href="#cap-10-alfabetizacao-letramento-e-generos-textuais-na-bncc">10. Alfabetização, Letramento e Gêneros Textuais na BNCC</a></div>
+<ul class="indice-subs">
+<li><a href="#sub-10-1-alfabetizacao-e-letramento-conceitos-e-metodologias">10.1 Alfabetização e Letramento: Conceitos e Metodologias</a></li>
+<li><a href="#sub-10-2-generos-textuais-e-a-bncc-de-lingua-portuguesa">10.2 Gêneros Textuais e a BNCC de Língua Portuguesa</a></li>
+<li><a href="#sub-10-3-metodos-de-alfabetizacao-sintetico-analitico-e-construtivista">10.3 Métodos de Alfabetização: Sintético, Analítico e Construtivista</a></li>
+<li><a href="#sub-10-4-avaliacao-diagnostica-e-intervencao-pedagogica-em-lingua-portuguesa">10.4 Avaliação Diagnóstica e Intervenção Pedagógica em Língua Portuguesa</a></li>
+<li><a href="#sub-10-5-oralidade-e-producao-textual-nas-series-iniciais">10.5 Oralidade e Produção Textual nas Séries Iniciais</a></li>
+</ul>
+<div class="indice-cap"><a href="#cap-11-morfologia-formacao-de-palavras">11. Morfologia — Formação de Palavras</a></div>
+<ul class="indice-subs">
+<li><a href="#sub-11-1-estrutura-das-palavras-derivacao-e-composicao">11.1 Estrutura das Palavras, Derivação e Composição</a></li>
+</ul>
+<div class="indice-cap"><a href="#cap-12-pontuacao">12. Pontuação</a></div>
+<ul class="indice-subs">
+<li><a href="#sub-12-1-virgula-ponto-e-virgula-dois-pontos-e-demais-sinais">12.1 Vírgula, Ponto e Vírgula, Dois-Pontos e Demais Sinais</a></li>
+</ul>
+<div class="indice-cap"><a href="#cap-13-periodo-composto-coordenacao-e-subordinacao">13. Período Composto — Coordenação e Subordinação</a></div>
+<ul class="indice-subs">
+<li><a href="#sub-13-1-oracoes-coordenadas-e-subordinadas">13.1 Orações Coordenadas e Subordinadas</a></li>
+</ul>
+<div class="indice-cap"><a href="#cap-14-colocacao-pronominal">14. Colocação Pronominal</a></div>
+<ul class="indice-subs">
+<li><a href="#sub-14-1-proclise-mesoclise-e-enclise">14.1 Próclise, Mesóclise e Ênclise</a></li>
+</ul>
+<div class="indice-cap"><a href="#cap-15-variacao-linguistica-preconceito-linguistico-e-literatura-infantil">15. Variação Linguística, Preconceito Linguístico e Literatura Infantil</a></div>
+<ul class="indice-subs">
+<li><a href="#sub-15-1-variacao-linguistica-e-preconceito-linguistico">15.1 Variação Linguística e Preconceito Linguístico</a></li>
+<li><a href="#sub-15-2-literatura-infantil-e-juvenil-e-formacao-do-leitor">15.2 Literatura Infantil e Juvenil e Formação do Leitor</a></li>
+</ul>
+<div class="indice-parte">PARTE II — MATEMÁTICA</div>
+<div class="indice-cap"><a href="#cap-16-numeros-e-sistema-de-numeracao-decimal">16. Números e Sistema de Numeração Decimal</a></div>
+<ul class="indice-subs">
+<li><a href="#sub-16-1-conjuntos-numericos">16.1 Conjuntos Numéricos</a></li>
+<li><a href="#sub-16-2-sistema-de-numeracao-decimal">16.2 Sistema de Numeração Decimal</a></li>
+</ul>
+<div class="indice-cap"><a href="#cap-17-operacoes-fundamentais">17. Operações Fundamentais</a></div>
+<ul class="indice-subs">
+<li><a href="#sub-17-1-adicao-e-subtracao">17.1 Adição e Subtração</a></li>
+<li><a href="#sub-17-2-multiplicacao-e-divisao">17.2 Multiplicação e Divisão</a></li>
+<li><a href="#sub-17-3-expressoes-numericas-e-ordem-das-operacoes">17.3 Expressões Numéricas e Ordem das Operações</a></li>
+</ul>
+<div class="indice-cap"><a href="#cap-18-fracoes">18. Frações</a></div>
+<ul class="indice-subs">
+<li><a href="#sub-18-1-conceito-e-representacao">18.1 Conceito e Representação</a></li>
+<li><a href="#sub-18-2-operacoes-com-fracoes">18.2 Operações com Frações</a></li>
+</ul>
+<div class="indice-cap"><a href="#cap-19-numeros-decimais">19. Números Decimais</a></div>
+<ul class="indice-subs">
+<li><a href="#sub-19-1-representacao-e-operacoes">19.1 Representação e Operações</a></li>
+</ul>
+<div class="indice-cap"><a href="#cap-20-razao-proporcao-e-porcentagem">20. Razão, Proporção e Porcentagem</a></div>
+<ul class="indice-subs">
+<li><a href="#sub-20-1-razao-e-proporcao">20.1 Razão e Proporção</a></li>
+<li><a href="#sub-20-2-regra-de-tres-simples">20.2 Regra de Três Simples</a></li>
+<li><a href="#sub-20-3-porcentagem">20.3 Porcentagem</a></li>
+</ul>
+<div class="indice-cap"><a href="#cap-21-geometria">21. Geometria</a></div>
+<ul class="indice-subs">
+<li><a href="#sub-21-1-formas-geometricas-planas">21.1 Formas Geométricas Planas</a></li>
+<li><a href="#sub-21-2-perimetro-e-area">21.2 Perímetro e Área</a></li>
+<li><a href="#sub-21-3-formas-geometricas-espaciais">21.3 Formas Geométricas Espaciais</a></li>
+</ul>
+<div class="indice-cap"><a href="#cap-22-grandezas-e-medidas">22. Grandezas e Medidas</a></div>
+<ul class="indice-subs">
+<li><a href="#sub-22-1-sistema-metrico-comprimento-massa-capacidade">22.1 Sistema Métrico (Comprimento, Massa, Capacidade)</a></li>
+<li><a href="#sub-22-2-medidas-de-tempo">22.2 Medidas de Tempo</a></li>
+</ul>
+<div class="indice-cap"><a href="#cap-23-estatistica-e-probabilidade">23. Estatística e Probabilidade</a></div>
+<ul class="indice-subs">
+<li><a href="#sub-23-1-leitura-e-interpretacao-de-graficos-e-tabelas">23.1 Leitura e Interpretação de Gráficos e Tabelas</a></li>
+<li><a href="#sub-23-2-media-moda-e-mediana">23.2 Média, Moda e Mediana</a></li>
+<li><a href="#sub-23-3-nocoes-de-probabilidade">23.3 Noções de Probabilidade</a></li>
+</ul>
+<div class="indice-cap"><a href="#cap-24-raciocinio-logico-matematico">24. Raciocínio Lógico-Matemático</a></div>
+<ul class="indice-subs">
+<li><a href="#sub-24-1-sequencias-e-padroes">24.1 Sequências e Padrões</a></li>
+<li><a href="#sub-24-2-problemas-de-logica">24.2 Problemas de Lógica</a></li>
+</ul>
+<div class="indice-cap"><a href="#cap-25-bncc-e-o-ensino-de-matematica-nos-anos-iniciais">25. BNCC e o Ensino de Matemática nos Anos Iniciais</a></div>
+<ul class="indice-subs">
+<li><a href="#sub-25-1-unidades-tematicas-da-bncc">25.1 Unidades Temáticas da BNCC</a></li>
+<li><a href="#sub-25-2-metodologias-de-ensino-da-matematica">25.2 Metodologias de Ensino da Matemática</a></li>
+</ul>
+<div class="indice-cap"><a href="#cap-26-matematica-financeira-basica">26. Matemática Financeira Básica</a></div>
+<ul class="indice-subs">
+<li><a href="#sub-26-1-juros-simples-juros-compostos-desconto-e-porcentagem-aplicada">26.1 Juros Simples, Juros Compostos, Desconto e Porcentagem Aplicada</a></li>
+</ul>
+<div class="indice-cap"><a href="#cap-27-sistema-monetario-numeracao-romana-e-calendario">27. Sistema Monetário, Numeração Romana e Calendário</a></div>
+<ul class="indice-subs">
+<li><a href="#sub-27-1-sistema-monetario-brasileiro-algarismos-romanos-e-calculo-de-datas">27.1 Sistema Monetário Brasileiro, Algarismos Romanos e Cálculo de Datas</a></li>
+</ul>
+<div class="indice-cap"><a href="#cap-28-progressoes-aritmeticas-e-geometricas">28. Progressões Aritméticas e Geométricas</a></div>
+<ul class="indice-subs">
+<li><a href="#sub-28-1-pa-e-pg-termo-geral-e-soma-dos-termos">28.1 PA e PG: Termo Geral e Soma dos Termos</a></li>
+</ul>
+<div class="indice-cap"><a href="#cap-29-nocoes-de-combinatoria-e-escalas">29. Noções de Combinatória e Escalas</a></div>
+<ul class="indice-subs">
+<li><a href="#sub-29-1-principio-fundamental-da-contagem-e-leitura-de-escalas">29.1 Princípio Fundamental da Contagem e Leitura de Escalas</a></li>
+</ul>
+<div class="indice-parte">PARTE III — INFORMÁTICA BÁSICA</div>
+<div class="indice-cap"><a href="#cap-30-informatica-basica">30. Informática Básica</a></div>
+<ul class="indice-subs">
+<li><a href="#sub-30-1-windows-word-excel-internet-e-conceitos-essenciais">30.1 Windows, Word/Excel, Internet e Conceitos Essenciais</a></li>
+<li><a href="#sub-30-2-internet-nuvem-e-mail-e-redes-sociais">30.2 Internet, Nuvem, E-mail e Redes Sociais</a></li>
+<li><a href="#sub-30-3-seguranca-da-informacao-e-nocoes-de-lgpd">30.3 Segurança da Informação e Noções de LGPD</a></li>
+<li><a href="#sub-30-4-pacote-microsoft-office-word-excel-e-powerpoint-em-detalhe">30.4 Pacote Microsoft Office — Word, Excel e PowerPoint em Detalhe</a></li>
+<li><a href="#sub-30-5-google-docs-planilhas-e-google-workspace">30.5 Google Docs, Planilhas e Google Workspace</a></li>
+<li><a href="#sub-30-6-nocoes-basicas-de-linux">30.6 Noções Básicas de Linux</a></li>
+<li><a href="#sub-30-7-armazenamento-em-nuvem-cloud-e-principais-ferramentas-de-ia">30.7 Armazenamento em Nuvem (Cloud) e Principais Ferramentas de IA</a></li>
+<li><a href="#sub-30-8-word-e-powerpoint-no-dia-a-dia-do-professor">30.8 Word e PowerPoint no Dia a Dia do Professor</a></li>
+</ul>
+<div class="indice-parte">PARTE IV — LEGISLAÇÃO E CONHECIMENTOS PEDAGÓGICOS</div>
+<div class="indice-cap"><a href="#cap-31-legislacao-educacional-i-ldb-lei-no-9-394-1996">31. Legislação Educacional I — LDB (Lei nº 9.394/1996)</a></div>
+<ul class="indice-subs">
+<li><a href="#sub-31-1-principios-organizacao-e-incumbencias-na-ldb">31.1 Princípios, Organização e Incumbências na LDB</a></li>
+</ul>
+<div class="indice-cap"><a href="#cap-32-legislacao-educacional-ii-eca-pne-e-constituicao-federal">32. Legislação Educacional II — ECA, PNE e Constituição Federal</a></div>
+<ul class="indice-subs">
+<li><a href="#sub-32-1-estatuto-da-crianca-e-do-adolescente-plano-nacional-de-educacao-e-constituicao">32.1 Estatuto da Criança e do Adolescente, Plano Nacional de Educação e Constituição</a></li>
+</ul>
+<div class="indice-cap"><a href="#cap-33-teoricos-da-educacao-e-correntes-pedagogicas">33. Teóricos da Educação e Correntes Pedagógicas</a></div>
+<ul class="indice-subs">
+<li><a href="#sub-33-1-piaget-vygotsky-paulo-freire-e-os-pioneiros-da-educacao-ativa">33.1 Piaget, Vygotsky, Paulo Freire e os Pioneiros da Educação Ativa</a></li>
+<li><a href="#sub-33-2-raizes-classicas-socrates-platao-aristoteles-trivium-e-quadrivium">33.2 Raízes Clássicas: Sócrates, Platão, Aristóteles, Trivium e Quadrivium</a></li>
+<li><a href="#sub-33-3-pensamento-educacional-norte-americano-dewey-skinner-e-o-escolanovismo">33.3 Pensamento Educacional Norte-Americano: Dewey, Skinner e o Escolanovismo</a></li>
+</ul>
+<div class="indice-cap"><a href="#cap-34-tendencias-pedagogicas-curriculo-e-avaliacao-escolar">34. Tendências Pedagógicas, Currículo e Avaliação Escolar</a></div>
+<ul class="indice-subs">
+<li><a href="#sub-34-1-tendencias-pedagogicas-libaneo-e-teorias-do-curriculo">34.1 Tendências Pedagógicas (Libâneo) e Teorias do Currículo</a></li>
+</ul>
+<div class="indice-cap"><a href="#cap-35-bncc-educacao-infantil-e-ensino-fundamental-i">35. BNCC — Educação Infantil e Ensino Fundamental I</a></div>
+<ul class="indice-subs">
+<li><a href="#sub-35-1-campos-de-experiencia-direitos-de-aprendizagem-e-competencias-gerais">35.1 Campos de Experiência, Direitos de Aprendizagem e Competências Gerais</a></li>
+</ul>
+<div class="indice-cap"><a href="#cap-36-educacao-infantil-caracteristicas-cuidados-e-desenvolvimento-0-a-3-anos">36. Educação Infantil — Características, Cuidados e Desenvolvimento (0 a 3 anos)</a></div>
+<ul class="indice-subs">
+<li><a href="#sub-36-1-a-crianca-de-0-a-3-anos-rotina-cuidados-e-desenvolvimento-psicomotor">36.1 A Criança de 0 a 3 Anos: Rotina, Cuidados e Desenvolvimento Psicomotor</a></li>
+</ul>
+<div class="indice-cap"><a href="#cap-37-educacao-inclusiva-e-atendimento-educacional-especializado">37. Educação Inclusiva e Atendimento Educacional Especializado</a></div>
+<ul class="indice-subs">
+<li><a href="#sub-37-1-politica-nacional-de-educacao-especial-na-perspectiva-da-educacao-inclusiva">37.1 Política Nacional de Educação Especial na Perspectiva da Educação Inclusiva</a></li>
+</ul>
+<div class="indice-parte">PARTE V — SIMULADOS (15 no total)</div>
+<div class="indice-cap"><a href="#cap-38-simulado-geral-lingua-portuguesa">38. Simulado Geral — Língua Portuguesa</a></div>
+<ul class="indice-subs">
+<li><a href="#sub-38-1-simulado-todos-os-conteudos-da-apostila">38.1 Simulado — Todos os Conteúdos da Apostila</a></li>
+</ul>
+<div class="indice-cap"><a href="#cap-39-simulado-2-portugues-formatos-variados">39. Simulado 2 — Português (Formatos Variados)</a></div>
+<ul class="indice-subs">
+<li><a href="#sub-39-1-simulado-2-multiplos-formatos-de-questao">39.1 Simulado 2 — Múltiplos Formatos de Questão</a></li>
+</ul>
+<div class="indice-cap"><a href="#cap-40-simulado-3-portugues-somatoria">40. Simulado 3 — Português (Somatória)</a></div>
+<ul class="indice-subs">
+<li><a href="#sub-40-1-simulado-3-somatoria-proposicoes-multiplas">40.1 Simulado 3 — Somatória (Proposições Múltiplas)</a></li>
+</ul>
+<div class="indice-cap"><a href="#cap-41-simulado-geral-matematica">41. Simulado Geral — Matemática</a></div>
+<ul class="indice-subs">
+<li><a href="#sub-41-1-simulado-todos-os-conteudos-da-apostila">41.1 Simulado — Todos os Conteúdos da Apostila</a></li>
+</ul>
+<div class="indice-cap"><a href="#cap-42-simulado-2-matematica">42. Simulado 2 — Matemática</a></div>
+<ul class="indice-subs">
+<li><a href="#sub-42-1-simulado-2-todos-os-conteudos-da-apostila">42.1 Simulado 2 — Todos os Conteúdos da Apostila</a></li>
+</ul>
+<div class="indice-cap"><a href="#cap-43-simulado-3-matematica">43. Simulado 3 — Matemática</a></div>
+<ul class="indice-subs">
+<li><a href="#sub-43-1-simulado-3-questoes-situacionais-e-contextualizadas">43.1 Simulado 3 — Questões Situacionais e Contextualizadas</a></li>
+</ul>
+<div class="indice-cap"><a href="#cap-44-simulado-4-matematica-formatos-variados">44. Simulado 4 — Matemática (Formatos Variados)</a></div>
+<ul class="indice-subs">
+<li><a href="#sub-44-1-simulado-4-formatos-de-questao-variados">44.1 Simulado 4 — Formatos de Questão Variados</a></li>
+</ul>
+<div class="indice-cap"><a href="#cap-45-simulado-5-matematica-somatoria">45. Simulado 5 — Matemática (Somatória)</a></div>
+<ul class="indice-subs">
+<li><a href="#sub-45-1-simulado-5-somatoria-proposicoes-multiplas">45.1 Simulado 5 — Somatória (Proposições Múltiplas)</a></li>
+</ul>
+<div class="indice-cap"><a href="#cap-46-simulado-6-matematica-somatoria">46. Simulado 6 — Matemática (Somatória)</a></div>
+<ul class="indice-subs">
+<li><a href="#sub-46-1-simulado-6-somatoria-proposicoes-multiplas">46.1 Simulado 6 — Somatória (Proposições Múltiplas)</a></li>
+</ul>
+<div class="indice-cap"><a href="#cap-47-simulado-7-matematica-somatoria">47. Simulado 7 — Matemática (Somatória)</a></div>
+<ul class="indice-subs">
+<li><a href="#sub-47-1-simulado-7-somatoria-proposicoes-multiplas">47.1 Simulado 7 — Somatória (Proposições Múltiplas)</a></li>
+</ul>
+<div class="indice-cap"><a href="#cap-48-simulado-8-matematica-somatoria">48. Simulado 8 — Matemática (Somatória)</a></div>
+<ul class="indice-subs">
+<li><a href="#sub-48-1-simulado-8-somatoria-proposicoes-multiplas">48.1 Simulado 8 — Somatória (Proposições Múltiplas)</a></li>
+</ul>
+<div class="indice-cap"><a href="#cap-49-simulado-9-matematica-somatoria">49. Simulado 9 — Matemática (Somatória)</a></div>
+<ul class="indice-subs">
+<li><a href="#sub-49-1-simulado-9-somatoria-proposicoes-multiplas">49.1 Simulado 9 — Somatória (Proposições Múltiplas)</a></li>
+</ul>
+<div class="indice-cap"><a href="#cap-50-simulado-10-informatica-basica">50. Simulado 10 — Informática Básica</a></div>
+<ul class="indice-subs">
+<li><a href="#sub-50-1-simulado-windows-office-google-workspace-linux-nuvem-e-ia">50.1 Simulado — Windows, Office, Google Workspace, Linux, Nuvem e IA</a></li>
+</ul>
+<div class="indice-cap"><a href="#cap-51-simulado-11-legislacao-e-conhecimentos-pedagogicos">51. Simulado 11 — Legislação e Conhecimentos Pedagógicos</a></div>
+<ul class="indice-subs">
+<li><a href="#sub-51-1-simulado-ldb-eca-pne-teoricos-e-bncc">51.1 Simulado — LDB, ECA, PNE, Teóricos e BNCC</a></li>
+</ul>
+<div class="indice-parte">PARTE VI — QUESTÕES RESOLVIDAS PASSO A PASSO</div>
+<div class="indice-cap"><a href="#cap-52-questoes-resolvidas-portugues-passo-a-passo">52. Questões Resolvidas — Português (Passo a Passo)</a></div>
+<ul class="indice-subs">
+<li><a href="#sub-52-1-ortografia-acentuacao-e-classes-gramaticais">52.1 Ortografia, Acentuação e Classes Gramaticais</a></li>
+<li><a href="#sub-52-2-sintaxe-concordancia-e-regencia">52.2 Sintaxe, Concordância e Regência</a></li>
+</ul>
+<div class="indice-cap"><a href="#cap-53-questoes-resolvidas-matematica-passo-a-passo">53. Questões Resolvidas — Matemática (Passo a Passo)</a></div>
+<ul class="indice-subs">
+<li><a href="#sub-53-1-numeros-operacoes-e-fracoes">53.1 Números, Operações e Frações</a></li>
+<li><a href="#sub-53-2-decimais-razao-proporcao-e-porcentagem">53.2 Decimais, Razão, Proporção e Porcentagem</a></li>
+<li><a href="#sub-53-3-geometria-e-grandezas">53.3 Geometria e Grandezas</a></li>
+<li><a href="#sub-53-4-estatistica-e-raciocinio-logico">53.4 Estatística e Raciocínio Lógico</a></li>
+</ul>
+<div class="indice-parte">PARTE VII — PROVAS ANTERIORES DA BANCA (IVIN)</div>
+<div class="indice-cap"><a href="#cap-54-provas-anteriores-da-banca-instituto-vicente-nelson">54. Provas Anteriores da Banca (Instituto Vicente Nelson)</a></div>
+<ul class="indice-subs">
+<li><a href="#sub-54-1-questoes-reais-concurso-pedagogo-prefeitura-de-santarem-pa-ivin-2024">54.1 Questões Reais — Concurso Pedagogo, Prefeitura de Santarém-PA (IVIN, 2024)</a></li>
+</ul>
+</div>
+</body>
+</html>

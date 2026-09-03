@@ -32,32 +32,44 @@
   }
   *{box-sizing:border-box; margin:0; padding:0;}
   html,body{ background:var(--bg); font-family:'Source Sans 3', sans-serif; color:var(--ink); }
-  .wrap{max-width:760px; margin:0 auto; padding:0 20px 60px;}
+  .wrap{max-width:700px; margin:0 auto; padding:0 18px 44px;}
+
+  /* Em telas grandes a página vira um "cartão" central com respiro e sombra,
+     em vez de esticar o texto de ponta a ponta da tela. */
+  @media (min-width:860px){
+    body{ padding:28px 0 40px; }
+    .page-shell{
+      max-width:760px; margin:0 auto; background:var(--white);
+      border-radius:20px; overflow:hidden; box-shadow:0 18px 46px rgba(15,37,71,.16);
+      border:1px solid var(--line);
+    }
+    .wrap{ padding-left:26px; padding-right:26px; }
+  }
 
   .hero{
     background:linear-gradient(160deg, var(--navy-deep) 0%, var(--navy) 62%, #274A82 100%);
-    color:var(--white); padding:44px 24px 38px; position:relative; overflow:hidden;
+    color:var(--white); padding:20px 24px 32px; position:relative; overflow:hidden;
   }
   .hero::after{
     content:""; position:absolute; right:-80px; top:-80px; width:280px; height:280px;
     border-radius:50%; background:radial-gradient(circle, rgba(201,162,39,.28) 0%, rgba(201,162,39,0) 70%);
   }
   .hero-inner{ max-width:760px; margin:0 auto; position:relative; z-index:1; }
-  .store-badge-row{ display:flex; justify-content:flex-end; margin-bottom:14px; }
+  .store-badge-row{ display:flex; justify-content:flex-end; margin-bottom:6px; }
   .store-badge{
-    display:flex; flex-direction:column; align-items:center; gap:3px;
+    display:flex; flex-direction:row; align-items:center; gap:7px;
     background:rgba(255,255,255,.08); border:1px solid rgba(233,212,142,.4);
-    border-radius:13px; padding:10px 15px;
+    border-radius:20px; padding:5px 13px 5px 8px;
     text-decoration:none; cursor:pointer; flex-shrink:0;
   }
   .store-badge .temple{
-    font-size:45px; line-height:1; display:inline-block;
+    font-size:22px; line-height:1; display:inline-block;
     animation:templeWobble 2.4s ease-in-out infinite;
   }
   @keyframes templeWobble{0%,100%{transform:rotate(-45deg);} 50%{transform:rotate(45deg);}}
   .store-badge .store-text{
-    font-size:11.9px; font-weight:800; color:var(--gold-light); text-align:center;
-    line-height:1.2; text-transform:uppercase; letter-spacing:.03em; white-space:nowrap;
+    font-size:10.5px; font-weight:800; color:var(--gold-light); text-align:left;
+    line-height:1.15; text-transform:uppercase; letter-spacing:.03em; white-space:nowrap;
   }
   .eyebrow{
     display:inline-flex; align-items:center; gap:6px; font-size:11.5px; letter-spacing:.14em;
@@ -169,9 +181,182 @@
     font-size:11px; font-weight:700; padding:3px 9px; border-radius:12px; white-space:nowrap;
   }
   .clique-dica{ text-align:center; font-size:12.5px; color:var(--navy); font-weight:600; margin-bottom:10px; }
+
+  /* Miniaturas ao vivo (capa / índice / conteúdo) da apostila em PDF —
+     HTML/CSS reais renderizados num iframe e reduzidos via transform:scale,
+     não são prints estáticos. */
+  .preview-row{ display:flex; justify-content:center; align-items:flex-start; gap:12px; margin:18px 0 6px; }
+  .thumb-frame-col{ display:flex; flex-direction:column; align-items:center; }
+  .thumb-frame{
+    width:112px; height:158px; flex-shrink:0; position:relative; overflow:hidden;
+    border-radius:6px; box-shadow:0 4px 14px rgba(15,37,71,.28); background:#fff;
+    border:1.5px solid var(--line);
+  }
+  .thumb-frame iframe{
+    position:absolute; top:0; left:0; width:794px; height:1123px; border:0;
+    transform:scale(0.141); transform-origin:top left; pointer-events:none;
+  }
+  .thumb-frame-label{ font-size:10.5px; color:var(--ink-soft); text-align:center; margin-top:5px; text-transform:uppercase; letter-spacing:.04em; font-weight:600; }
+
+  /* Lista suspensa dourada "APOSTILA em PDF" — mesmo padrão do PSS SEED-PR */
+  .apostilas-box{ margin-top:18px; }
+  .apostilas-summary{
+    list-style:none; cursor:pointer; display:flex; align-items:center; gap:9px;
+    width:fit-content; margin:0 auto; background:linear-gradient(135deg, var(--gold), var(--gold-light));
+    border:none; border-radius:12px; padding:11px 18px; font-weight:800; letter-spacing:.01em;
+    box-shadow:0 2px 10px rgba(15,37,71,.25);
+    animation:apostilasGlow 2.8s ease-in-out infinite; transition:transform .15s ease;
+  }
+  .apostilas-box[open] .apostilas-summary{ transform:none; }
+  .apostilas-summary:hover{ transform:translateY(-1px); }
+  @keyframes apostilasGlow{
+    0%,100%{box-shadow:0 2px 10px rgba(15,37,71,.25);}
+    50%{box-shadow:0 2px 16px rgba(255,255,255,.45);}
+  }
+  .apostilas-summary::-webkit-details-marker{ display:none; }
+  .apostilas-icon{ font-size:19px; line-height:1; display:inline-block; }
+  .apostilas-summary .apostilas-text{ font-size:13.5px; color:var(--navy-deep); }
+  .apostilas-summary .chev{ font-size:12px; color:var(--navy-deep); transition:transform .2s ease; margin-left:2px; }
+  .apostilas-box[open] .apostilas-summary .chev{ transform:rotate(180deg); }
+  .apostilas-list{ display:flex; flex-direction:column; align-items:center; gap:10px; margin-top:12px; }
+  .apostila-link{
+    display:flex; align-items:center; gap:8px; text-decoration:none;
+    background:rgba(255,255,255,.08); border:1px solid rgba(233,212,142,.35); border-radius:10px;
+    padding:10px 14px; font-size:13.8px; font-weight:700; color:#fff; line-height:1.3;
+  }
+
+  /* Botão vermelho "Veja o material por dentro" — leva ao checkout eduzz */
+  .apostilas-page-link{
+    display:flex; align-items:center; justify-content:center; gap:8px; text-align:center;
+    width:100%; max-width:420px; margin:16px auto 0;
+    background:linear-gradient(135deg, #C0392B, #E74C3C); color:#fff;
+    border-radius:12px; padding:13px 18px; font-weight:800; font-size:14px; letter-spacing:.01em;
+    text-decoration:none; box-shadow:0 2px 10px rgba(15,37,71,.25);
+    animation:apostilasRedGlow 2.8s ease-in-out infinite; transition:transform .15s ease;
+  }
+  .apostilas-page-link:hover{ transform:translateY(-1px); }
+  .apostilas-page-link .icon{ font-size:17px; line-height:1; display:inline-block; transform:rotate(180deg); }
+  .apostilas-page-link .arrow{ font-size:13px; }
+  .apostilas-page-link .pdf-tag{
+    display:inline-block; margin-left:7px; background:#fff; color:#C0392B;
+    font-size:15px; font-weight:900; letter-spacing:.04em; padding:3px 9px; border-radius:7px;
+    vertical-align:middle; animation:pdfHeartbeat 1.1s ease-in-out infinite;
+  }
+  @keyframes pdfHeartbeat{
+    0%,100%{transform:scale(1);} 20%{transform:scale(1.18);} 35%{transform:scale(1);}
+    50%{transform:scale(1.12);} 65%{transform:scale(1);}
+  }
+  @keyframes apostilasRedGlow{
+    0%,100%{box-shadow:0 2px 10px rgba(15,37,71,.25);}
+    50%{box-shadow:0 2px 18px rgba(231,76,60,.6);}
+  }
+
+  /* Simulação visual de conversa do WhatsApp — mostra como o PDF chega no
+     grupo. É uma ilustração/mockup (não é print real de conversa), com link
+     de verdade para o grupo. */
+  .wa-mock-caption{ text-align:center; font-size:12.5px; color:var(--gold-light); font-weight:700; margin:18px 0 8px; }
+  .wa-mock{
+    display:flex; flex-direction:column; width:100%; max-width:340px; min-height:340px; margin:0 auto;
+    cursor:pointer; border-radius:14px; overflow:hidden; box-shadow:0 8px 24px rgba(15,37,71,.22);
+    border:1px solid #0b3d20; transition:transform .15s ease;
+  }
+  .wa-mock:hover{ transform:translateY(-1px); }
+  .wa-mock-header{
+    display:flex; align-items:center; gap:10px; background:#1f2c34; color:#fff; padding:10px 12px;
+  }
+  .wa-mock-avatar{
+    width:34px; height:34px; border-radius:50%; background:#fff;
+    display:flex; align-items:center; justify-content:center; flex-shrink:0; overflow:hidden;
+  }
+  .wa-mock-avatar img{ width:100%; height:100%; object-fit:cover; }
+  .wa-mock-title{ flex:1; min-width:0; }
+  .wa-mock-name{ font-size:13px; font-weight:700; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+  .wa-mock-sub{ font-size:10.5px; color:#a9b6bf; }
+  .wa-mock-icons{ font-size:12px; color:#d0d6da; letter-spacing:4px; flex-shrink:0; }
+  .wa-mock-body{
+    flex:1; display:flex; flex-direction:column;
+    background:#e5ddd5 url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='60' height='60'%3E%3Ccircle cx='6' cy='6' r='1' fill='%23d8cfc4'/%3E%3C/svg%3E");
+    padding:14px 12px 12px;
+  }
+  .wa-mock-date-pill{
+    align-self:center; background:#e1f2fb; color:#5a6a7a; font-size:9.5px; font-weight:700;
+    padding:3px 10px; border-radius:6px; margin-bottom:12px; box-shadow:0 1px 1px rgba(0,0,0,.08);
+  }
+  .wa-mock-bubble{
+    display:block; background:#dcf8c6; border-radius:9px 9px 2px 9px; padding:7px 7px 5px; max-width:88%; margin-left:auto;
+    box-shadow:0 1px 1px rgba(0,0,0,.12); text-decoration:none; cursor:pointer;
+  }
+  .wa-mock-bubble-2{ margin-top:8px; padding:7px 9px 5px; }
+  .wa-mock-text{ font-size:12px; color:#1a1a1a; line-height:1.4; }
+  .wa-mock-bubble-link{ padding:7px 7px 0; }
+  .wa-mock-link-card{ display:flex; align-items:center; gap:8px; padding:0 0 6px; }
+  .wa-mock-link-ico{
+    width:38px; height:38px; border-radius:50%; overflow:hidden; flex-shrink:0; background:#fff;
+  }
+  .wa-mock-link-ico img{ width:100%; height:100%; object-fit:cover; }
+  .wa-mock-link-title{ font-size:12px; font-weight:700; color:#1a1a1a; line-height:1.3; }
+  .wa-mock-link-domain{ font-size:11px; color:#3b4a54; margin-top:1px; line-height:1.3; }
+  .wa-mock-link-url{ font-size:11.5px; color:#039be5; word-break:break-all; line-height:1.4; padding:0 0 5px; }
+  .wa-mock-link-divider{ height:1px; background:rgba(0,0,0,.08); margin:0 -7px; }
+  .wa-mock-link-cta{ text-align:center; font-size:12.5px; font-weight:700; color:#00a884; padding:8px 0 6px; }
+  /* Bolha recebida (de outro participante do grupo) — alinhada à esquerda */
+  .wa-mock-bubble-in{
+    background:#fff; border-radius:9px 9px 9px 2px; padding:6px 7px 5px; max-width:88%; margin:0 auto 8px 0;
+    box-shadow:0 1px 1px rgba(0,0,0,.12);
+  }
+  .wa-mock-sender{ font-size:11px; font-weight:800; color:#c0392b; margin:1px 4px 3px; }
+  .wa-mock-bubble-in .wa-mock-pdf-card{ margin-bottom:2px; }
+  .wa-mock-bubble-in .wa-mock-time{ color:#8696a0; }
+  .wa-mock-pdf-card{
+    position:relative; background:#fff; border-radius:7px; overflow:hidden; margin-bottom:4px;
+  }
+  .wa-mock-pdf-banner{ display:block; width:100%; height:auto; }
+  /* Botão circular de download — como o WhatsApp mostra num PDF que ainda
+     não foi baixado no aparelho. */
+  .wa-mock-pdf-download{
+    position:absolute; top:8px; right:8px; width:30px; height:30px; border-radius:50%;
+    background:rgba(0,0,0,.55); color:#fff; display:flex; align-items:center; justify-content:center;
+    font-size:14px; box-shadow:0 1px 3px rgba(0,0,0,.3);
+  }
+  .wa-mock-pdf-footer{
+    display:flex; align-items:center; gap:8px; margin:3px; padding:7px 8px;
+    background:#f0f2f5; border-radius:5px;
+  }
+  .wa-mock-pdf-icon{
+    width:24px; height:30px; border-radius:3px; background:#c0392b; color:#fff;
+    display:flex; align-items:center; justify-content:center; flex-shrink:0;
+    font-size:7.5px; font-weight:900; letter-spacing:.02em;
+  }
+  .wa-mock-pdf-info{ min-width:0; }
+  .wa-mock-pdf-name{ font-size:11.5px; font-weight:700; color:#1a1a1a; line-height:1.3; overflow:hidden; text-overflow:ellipsis; display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; }
+  .wa-mock-pdf-meta{ font-size:10px; color:#667781; margin-top:2px; }
+  .wa-mock-time{ text-align:right; font-size:9.5px; color:#5a6a56; }
+  .wa-mock-time .wa-mock-check{ color:#4fc3f7; font-weight:700; margin-left:2px; }
+  .wa-mock-tap-hint{ text-align:center; font-size:11.5px; color:#3d4a3f; font-weight:700; margin-top:auto; padding-top:10px; }
+
+  /* Seção "peça sua apostila" — pedido informativo por cargo, via WhatsApp */
+  .pedido-box{ background:var(--white); border:1px solid var(--line); border-radius:12px; padding:18px 20px; margin-bottom:14px; }
+  .pedido-lista{ list-style:none; margin:12px 0 16px; display:flex; flex-direction:column; gap:8px; max-height:340px; overflow-y:auto; padding-right:4px; }
+  .pedido-lista li{ display:flex; align-items:center; gap:9px; font-size:13px; color:var(--ink); border-bottom:1px dashed var(--line); padding-bottom:8px; }
+  .pedido-lista li:last-child{ border-bottom:none; padding-bottom:0; }
+  .pedido-lista input[type="checkbox"]{ width:17px; height:17px; accent-color:var(--navy); flex-shrink:0; cursor:pointer; }
+  .pedido-lista label{ cursor:pointer; flex:1; }
+  .pedido-vagas{ font-size:10.5px; font-weight:700; color:var(--navy); background:var(--bg); border:1px solid var(--line); padding:2px 8px; border-radius:10px; white-space:nowrap; flex-shrink:0; }
+  .pedido-btn{
+    display:flex; align-items:center; justify-content:center; gap:9px; width:100%;
+    padding:13px 20px; background:#25D366; color:#0b3d20; font-weight:800; font-size:14px;
+    text-decoration:none; border-radius:999px; box-shadow:0 3px 10px rgba(0,0,0,.18);
+    transition:transform .15s ease, opacity .15s ease;
+  }
+  .pedido-btn:hover{ transform:translateY(-1px); }
+  .pedido-em-breve{
+    display:flex; align-items:flex-start; gap:8px; background:var(--info-bg); border:1px solid #bcd3ee;
+    border-radius:9px; padding:11px 13px; font-size:12.5px; color:var(--ink-soft); margin-top:14px; line-height:1.5;
+  }
 </style>
 </head>
 <body>
+<div class="page-shell">
 
 <div class="hero">
   <div class="hero-inner">
@@ -193,9 +378,96 @@
     <a class="whats-btn" href="https://chat.whatsapp.com/Blt9evhBk7J3pQJ6zMttP2" target="_blank" rel="noopener">
       <span class="whats-ico">💬</span> Grupo Concurso ABAETETUBA-PARÁ
     </a>
-    <a class="edital-link edital-link-blink" href="https://chk.eduzz.com/1W32VZNG92" target="_blank" rel="noopener" style="display:block; margin:14px auto 0; max-width:420px;">
-      Apostila - PEDAGOGO
+    <details class="apostilas-box" id="sec-apostila" open>
+      <summary class="apostilas-summary">
+        <span class="apostilas-icon">📖</span>
+        <span class="apostilas-text">APOSTILA em PDF — Pedagogo / Professor</span>
+        <span class="chev">▾</span>
+      </summary>
+      <div class="apostilas-list">
+        <a href="https://chk.eduzz.com/1W32VZNG92" target="_blank" rel="noopener" class="apostila-link"><span class="book">📘</span><span class="subj">🎓</span> Apostila PEDAGOGO — Concurso Abaetetuba-PA 2026</a>
+        <a href="https://chk.eduzz.com/1W32VZNG92" target="_blank" rel="noopener" class="preview-row" aria-label="Ver prévia da apostila em PDF">
+          <div class="thumb-frame-col">
+            <div class="thumb-frame"><iframe src="previews/pedagogo-capa.html" scrolling="no" tabindex="-1"></iframe></div>
+            <div class="thumb-frame-label" style="color:var(--gold-light);">Capa</div>
+          </div>
+          <div class="thumb-frame-col">
+            <div class="thumb-frame"><iframe src="previews/pedagogo-indice.html" scrolling="no" tabindex="-1"></iframe></div>
+            <div class="thumb-frame-label" style="color:var(--gold-light);">Índice</div>
+          </div>
+          <div class="thumb-frame-col">
+            <div class="thumb-frame"><iframe src="previews/pedagogo-meio.html" scrolling="no" tabindex="-1"></iframe></div>
+            <div class="thumb-frame-label" style="color:var(--gold-light);">Conteúdo</div>
+          </div>
+        </a>
+      </div>
+    </details>
+
+    <a href="https://chk.eduzz.com/1W32VZNG92" target="_blank" rel="noopener" class="apostilas-page-link">
+      <span class="icon">👀</span>
+      <span class="txt">Adquira a apostila do Pedagogo / Professor<span class="pdf-tag">PDF</span></span>
+      <span class="arrow">↗</span>
     </a>
+
+    <p class="wa-mock-caption">💬 Participe do nosso grupo sobre o concurso de Abaetetuba!</p>
+    <div class="wa-mock" role="link" tabindex="0" aria-label="Entrar no grupo do WhatsApp do concurso" onclick="window.open('https://chat.whatsapp.com/Blt9evhBk7J3pQJ6zMttP2','_blank','noopener')" onkeydown="if(event.key==='Enter')this.click();">
+      <div class="wa-mock-header">
+        <div class="wa-mock-avatar"><img src="assets/icone-grupo-abaetetuba.jpg" alt="Ícone do grupo Concurso Abaetetuba-PA"></div>
+        <div class="wa-mock-title">
+          <div class="wa-mock-name">Concurso ABAETETUBA - PARÁ</div>
+          <div class="wa-mock-sub">Grupo · toque para entrar</div>
+        </div>
+        <div class="wa-mock-icons">⋮</div>
+      </div>
+      <div class="wa-mock-body">
+        <div class="wa-mock-date-pill">HOJE</div>
+        <div class="wa-mock-sender">Professor Rodrigo Matemática</div>
+        <a href="https://anexos-r2.selecao.net.br/uploads/763/concursos/102/anexos/dc3a1c60-4d31-4ff2-b37c-12794b7fa24e.pdf" target="_blank" rel="noopener" class="wa-mock-bubble-in" onclick="event.stopPropagation();">
+          <div class="wa-mock-pdf-card">
+            <img class="wa-mock-pdf-banner" src="assets/thumb-edital-banner.jpg" alt="">
+            <div class="wa-mock-pdf-download">⬇</div>
+            <div class="wa-mock-pdf-footer">
+              <div class="wa-mock-pdf-icon">PDF</div>
+              <div class="wa-mock-pdf-info">
+                <div class="wa-mock-pdf-name">Edital 001/2026 — Retificação (IVIN).pdf</div>
+                <div class="wa-mock-pdf-meta">203 páginas · PDF · 3,2 MB</div>
+              </div>
+            </div>
+          </div>
+          <div class="wa-mock-time">19:47</div>
+        </a>
+        <a href="https://chk.eduzz.com/1W32VZNG92" target="_blank" rel="noopener" class="wa-mock-bubble" onclick="event.stopPropagation();">
+          <div class="wa-mock-pdf-card">
+            <img class="wa-mock-pdf-banner" src="assets/thumb-apostila-banner.jpg" alt="">
+            <div class="wa-mock-pdf-footer">
+              <div class="wa-mock-pdf-icon">PDF</div>
+              <div class="wa-mock-pdf-info">
+                <div class="wa-mock-pdf-name">Apostila PEDAGOGO — Abaetetuba-PA 2026.pdf</div>
+                <div class="wa-mock-pdf-meta">187 páginas · PDF · conteúdo completo</div>
+              </div>
+            </div>
+          </div>
+          <div class="wa-mock-time">19:49 <span class="wa-mock-check">✓✓</span></div>
+        </a>
+        <div class="wa-mock-bubble wa-mock-bubble-2">
+          <div class="wa-mock-text">Chegou! 🎉 Baixem e bons estudos 📚</div>
+          <div class="wa-mock-time">19:49 <span class="wa-mock-check">✓✓</span></div>
+        </div>
+        <div class="wa-mock-bubble wa-mock-bubble-2 wa-mock-bubble-link">
+          <div class="wa-mock-link-card">
+            <div class="wa-mock-link-ico"><img src="assets/icone-grupo-abaetetuba.jpg" alt=""></div>
+            <div class="wa-mock-link-info">
+              <div class="wa-mock-link-title">Concurso ABAETETUBA - PARÁ</div>
+              <div class="wa-mock-link-domain">Convite para conversa em grupo</div>
+            </div>
+          </div>
+          <div class="wa-mock-link-url">https://chat.whatsapp.com/Blt9evhBk7J3pQJ6zMttP2</div>
+          <div class="wa-mock-time">19:50 <span class="wa-mock-check">✓✓</span></div>
+          <div class="wa-mock-link-divider"></div>
+          <div class="wa-mock-link-cta">Acessar grupo</div>
+        </div>
+      </div>
+    </div>
   </div>
 </div>
 
@@ -257,7 +529,6 @@
       </tbody>
     </table>
     <p class="fonte" style="text-align:center;">Total de vagas de educação listadas acima: <strong>1.113</strong></p>
-  </div>
   </div>
 
   <div class="card">
@@ -357,6 +628,34 @@
     <a href="https://institutovicentenelson.selecao.net.br/informacoes/102/" target="_blank" rel="noopener" class="edital-link edital-link-blink">Clique aqui para se inscrever no site oficial da banca (IVIN)</a>
   </div>
 
+  <h2>📚 Peça sua apostila</h2>
+  <p class="section-sub">Marque o(s) cargo(s) do seu interesse e mande a mensagem pronta pelo WhatsApp — sem compromisso.</p>
+  <div class="pedido-box">
+    <ul class="pedido-lista" id="pedidoLista">
+      <li><input type="checkbox" id="pd-pedagogo" value="Pedagogo"><label for="pd-pedagogo">Pedagogo</label><span class="pedido-vagas">23 vagas</span></li>
+      <li><input type="checkbox" id="pd-profI" value="Professor Fund. I / Licenciado em Pedagogia"><label for="pd-profI">Professor Fund. I / Licenciado em Pedagogia</label><span class="pedido-vagas">635 vagas</span></li>
+      <li><input type="checkbox" id="pd-infantil" value="Professor Educação Infantil"><label for="pd-infantil">Professor Educação Infantil</label><span class="pedido-vagas">194 vagas</span></li>
+      <li><input type="checkbox" id="pd-mat" value="Professor Fund. II — Matemática"><label for="pd-mat">Professor Fund. II — Matemática</label><span class="pedido-vagas">32 vagas</span></li>
+      <li><input type="checkbox" id="pd-port" value="Professor Fund. II — Língua Portuguesa"><label for="pd-port">Professor Fund. II — Língua Portuguesa</label><span class="pedido-vagas">36 vagas</span></li>
+      <li><input type="checkbox" id="pd-ciencias" value="Professor Fund. II — Ciências"><label for="pd-ciencias">Professor Fund. II — Ciências</label><span class="pedido-vagas">19 vagas</span></li>
+      <li><input type="checkbox" id="pd-edfisica" value="Professor Fund. II — Educação Física"><label for="pd-edfisica">Professor Fund. II — Educação Física</label><span class="pedido-vagas">20 vagas</span></li>
+      <li><input type="checkbox" id="pd-geografia" value="Professor Fund. II — Geografia"><label for="pd-geografia">Professor Fund. II — Geografia</label><span class="pedido-vagas">21 vagas</span></li>
+      <li><input type="checkbox" id="pd-historia" value="Professor Fund. II — História"><label for="pd-historia">Professor Fund. II — História</label><span class="pedido-vagas">19 vagas</span></li>
+      <li><input type="checkbox" id="pd-ingles" value="Professor Fund. II — Língua Inglesa"><label for="pd-ingles">Professor Fund. II — Língua Inglesa</label><span class="pedido-vagas">20 vagas</span></li>
+      <li><input type="checkbox" id="pd-arte" value="Professor Fund. II — Arte"><label for="pd-arte">Professor Fund. II — Arte</label><span class="pedido-vagas">19 vagas</span></li>
+      <li><input type="checkbox" id="pd-religioso" value="Professor Fund. II — Ensino Religioso"><label for="pd-religioso">Professor Fund. II — Ensino Religioso</label><span class="pedido-vagas">21 vagas</span></li>
+      <li><input type="checkbox" id="pd-libras" value="Professor Tradutor Intérprete de Libras"><label for="pd-libras">Professor Tradutor Intérprete de Libras</label><span class="pedido-vagas">20 vagas</span></li>
+      <li><input type="checkbox" id="pd-psicopedagogo" value="Psicopedagogo"><label for="pd-psicopedagogo">Psicopedagogo</label><span class="pedido-vagas">5 vagas</span></li>
+      <li><input type="checkbox" id="pd-outro" value="Outro cargo (vou informar no WhatsApp)"><label for="pd-outro">Outro cargo (vou informar no WhatsApp)</label></li>
+    </ul>
+    <a class="pedido-btn" id="pedidoBtn" href="#" target="_blank" rel="noopener">
+      <span class="whats-ico">💬</span> Pedir apostila pelo WhatsApp
+    </a>
+    <div class="pedido-em-breve">
+      🔜 <span><strong>Em breve, mais apostilas</strong> para os demais cargos e conteúdos do edital (Ciências, Educação Física, Geografia, História, Inglês, Arte, Ensino Religioso, Libras e Psicopedagogo). Marque acima o que você precisa — isso ajuda a priorizar o que sai primeiro.</span>
+    </div>
+  </div>
+
   <footer>
     Página informativa independente, sem vínculo oficial com a Prefeitura de Abaetetuba ou o Instituto Vicente Nelson.<br>
     Sempre confirme datas e valores no <a href="https://institutovicentenelson.selecao.net.br/informacoes/102/" target="_blank" rel="noopener">site oficial do concurso</a>.
@@ -364,6 +663,27 @@
   </footer>
 
 </div>
+</div>
+<script>
+  // Monta o link do WhatsApp com os cargos marcados na seção "Peça sua apostila".
+  (function() {
+    const NUM = '5545999699444';
+    const chks = document.querySelectorAll('#pedidoLista input[type="checkbox"]');
+    const btn = document.getElementById('pedidoBtn');
+    function montar() {
+      const marcados = Array.from(chks).filter(c => c.checked).map(c => c.value);
+      let msg;
+      if (marcados.length) {
+        msg = 'Olá! Tenho interesse na(s) apostila(s) do concurso de Abaetetuba-PA (Edital 001/2026) para: ' + marcados.join(', ') + '.';
+      } else {
+        msg = 'Olá! Tenho interesse em apostilas do concurso de Abaetetuba-PA (Edital 001/2026). Pode me ajudar?';
+      }
+      btn.href = 'https://wa.me/' + NUM + '?text=' + encodeURIComponent(msg);
+    }
+    chks.forEach(c => c.addEventListener('change', montar));
+    montar();
+  })();
+</script>
 <script>
   // Destaca automaticamente, em vermelho, a linha do cronograma que esta
   // vigente HOJE (comparando com a data/hora real do visitante) - assim a
