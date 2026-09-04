@@ -1,0 +1,87 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<title>Criativo 1080x1080 — anúncio Facebook/Instagram</title>
+<!-- Arquivo-fonte do criativo do anúncio. Renderize com Chrome headless a
+     1080x1080 para gerar assets/criativo-feed-1080.jpg. Não é servido no site. -->
+<style>
+  *{ margin:0; padding:0; box-sizing:border-box; }
+  body{ width:100vw; height:100vh; overflow:hidden;
+        font-family:"Segoe UI", system-ui, -apple-system, sans-serif; }
+  .art{
+    position:relative; width:100vw; height:100vh;
+    background:linear-gradient(160deg, #0B1D3A 0%, #123362 58%, #274A82 100%);
+    display:flex; flex-direction:column; align-items:center;
+  }
+  /* brilho suave atrás da capa */
+  .art::before{
+    content:""; position:absolute; left:50%; top:52%; transform:translate(-50%,-50%);
+    width:900px; height:900px; border-radius:50%;
+    background:radial-gradient(circle, rgba(233,212,142,.20) 0%, transparent 62%);
+  }
+  .topo{ position:relative; z-index:2; text-align:center; padding:44px 40px 0; }
+  .selo{
+    display:inline-block; background:#C0392B; color:#fff; font-size:26px; font-weight:800;
+    letter-spacing:.10em; padding:9px 26px; border-radius:999px; margin-bottom:18px;
+  }
+  .cidade{ font-size:74px; font-weight:900; color:#fff; line-height:1; letter-spacing:-.01em; }
+  .sub{ font-size:31px; font-weight:700; color:#E9D48E; margin-top:12px; letter-spacing:.02em; }
+
+  .meio{ position:relative; z-index:2; flex:1; display:flex; align-items:center; gap:36px; padding:26px 48px 0; }
+
+  .capa-holder{
+    width:400px; height:566px; position:relative; overflow:hidden; flex-shrink:0;
+    border-radius:12px; box-shadow:0 26px 60px rgba(0,0,0,.55);
+    transform:rotate(-3deg); border:3px solid rgba(233,212,142,.55); background:#fff;
+  }
+  .capa-holder iframe{
+    position:absolute; top:0; left:0; width:794px; height:1123px; border:0;
+    transform:scale(0.5038); transform-origin:top left;
+  }
+
+  .fatos{ display:flex; flex-direction:column; gap:16px; }
+  .fato{
+    display:flex; align-items:center; gap:14px;
+    background:rgba(255,255,255,.09); border:1.5px solid rgba(233,212,142,.35);
+    border-radius:14px; padding:16px 20px;
+  }
+  .fato .n{ font-size:42px; font-weight:900; color:#E9D48E; line-height:1; min-width:104px; }
+  .fato .t{ font-size:21px; font-weight:700; color:#fff; line-height:1.25; }
+  .fato .t small{ display:block; font-size:15px; font-weight:600; color:#B9C7DD; margin-top:2px; }
+
+  .rodape{
+    position:relative; z-index:2; width:100%; margin-top:22px;
+    background:linear-gradient(90deg,#E9D48E,#F5E6AE); padding:22px 40px 26px;
+    display:flex; align-items:center; justify-content:center; gap:18px;
+  }
+  .rodape .cta{ font-size:36px; font-weight:900; color:#0B1D3A; letter-spacing:.01em; text-align:center; line-height:1.15; }
+  .rodape .cta span{ display:block; font-size:20px; font-weight:700; color:#123362; margin-top:5px; letter-spacing:.02em; }
+  .brasao{ width:96px; height:96px; border-radius:50%; overflow:hidden; flex-shrink:0; border:3px solid #0B1D3A; }
+  .brasao img{ width:100%; height:100%; object-fit:cover; }
+</style>
+</head>
+<body>
+<div class="art">
+  <div class="topo">
+    <div class="selo">EDITAL 001/2026 · IVIN</div>
+    <div class="cidade">ABAETETUBA-PA</div>
+    <div class="sub">PEDAGOGO E PROFESSOR</div>
+  </div>
+
+  <div class="meio">
+    <div class="capa-holder"><iframe src="previews/pedagogo-capa.html" scrolling="no"></iframe></div>
+    <div class="fatos">
+      <div class="fato"><div class="n">40</div><div class="t">questões na prova<small>Português · Informática · Específicos</small></div></div>
+      <div class="fato"><div class="n">187</div><div class="t">páginas de apostila<small>conteúdo do edital, do zero</small></div></div>
+      <div class="fato"><div class="n">3h</div><div class="t">de prova objetiva<small>reprova quem zerar 1 disciplina</small></div></div>
+    </div>
+  </div>
+
+  <div class="rodape">
+    <div class="brasao"><img src="assets/icone-grupo-abaetetuba.jpg" alt=""></div>
+    <div class="cta">EDITAL RESUMIDO + APOSTILA EM PDF<span>cronograma, salários e conteúdo programático</span></div>
+  </div>
+</div>
+</body>
+</html>
